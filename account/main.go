@@ -6,9 +6,12 @@ import (
 	"github.com/On-A-Rocket/Authorization-System/account/application/command"
 	"github.com/On-A-Rocket/Authorization-System/account/config"
 	"github.com/On-A-Rocket/Authorization-System/account/controller"
+	"github.com/On-A-Rocket/Authorization-System/account/docs"
 	"github.com/On-A-Rocket/Authorization-System/account/domain/entity"
 	"github.com/On-A-Rocket/Authorization-System/account/repository"
 	"github.com/gin-gonic/gin"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -35,7 +38,14 @@ func getDatabaseConnection(config config.Interface) *gorm.DB {
 	return db
 }
 
+func setSwaggerInfo() {
+	docs.SwaggerInfo.Title = "Authorization System REST API"
+	docs.SwaggerInfo.Description = "This is a Authorization System rest api server for swagger"
+	docs.SwaggerInfo.Version = "1.0"
+}
+
 func main() {
+	setSwaggerInfo()
 	config := config.Initialize()
 
 	router := gin.Default()
@@ -48,5 +58,6 @@ func main() {
 	ctl := controller.NewController(*command)
 	ctl.Routing(router)
 
+	router.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	log.Fatal(router.Run(":5001"))
 }

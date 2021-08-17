@@ -1,0 +1,44 @@
+definitions:
+  dto.CreateAccount:
+    properties:
+      email:
+        type: string
+      hire_date:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      phone_number:
+        type: string
+      work_code:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /account:
+    post:
+      consumes:
+      - application/json
+      description: Create Account
+      parameters:
+      - description: create account
+        in: body
+        name: Account
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateAccount'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Create Account
+      tags:
+      - Account
+swagger: "2.0"

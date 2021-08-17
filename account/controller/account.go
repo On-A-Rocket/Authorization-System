@@ -24,6 +24,14 @@ func (ctl *AccountController) accountRouting(router *gin.Engine) {
 	}
 }
 
+// @Summary Create Account
+// @Description Create Account
+// @Tags Account
+// @Accept json
+// @Produce json
+// @Router /account [post]
+// @Param Account body dto.CreateAccount true "create account"
+// @Success 200 {string} create account
 func (ctl *AccountController) CreateAccount(context *gin.Context) {
 	dto := &dto.CreateAccount{}
 	if err := context.ShouldBind(&dto); err != nil {
