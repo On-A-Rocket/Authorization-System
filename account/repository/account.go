@@ -10,7 +10,7 @@ type AccountRepository struct {
 }
 
 func newAccountRepository(db *gorm.DB) *AccountRepository {
-	return &AccountRepository{}
+	return &AccountRepository{db}
 }
 
 func (repo *AccountRepository) CreateAccount(account *entity.Account) error {
