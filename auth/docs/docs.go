@@ -25,7 +25,7 @@ var doc = `{
     "paths": {
         "/account": {
             "post": {
-                "description": "Create Account",
+                "description": "회원가입",
                 "consumes": [
                     "application/json"
                 ],

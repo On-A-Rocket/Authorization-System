@@ -23,7 +23,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create Account
+      description: 회원가입
       parameters:
       - description: create account
         in: body

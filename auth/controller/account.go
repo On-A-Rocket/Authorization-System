@@ -25,7 +25,7 @@ func (ctl *AccountController) accountRouting(router *gin.Engine) {
 }
 
 // @Summary Create Account
-// @Description Create Account
+// @Description 회원가입
 // @Tags Account
 // @Accept json
 // @Produce json
