@@ -39,9 +39,6 @@ func (r *Redis) Client() *redis.Client {
 		Password: r.password,
 		DB:       0,
 	})
-	if _, err := client.Ping().Result(); err != nil {
-		panic(err)
-	}
 	return client
 }
 
