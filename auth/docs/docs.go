@@ -56,6 +56,40 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/login": {
+            "get": {
+                "description": "Login",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Login"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Id",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Password",
+                        "name": "password",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -63,25 +97,32 @@ var doc = `{
             "type": "object",
             "properties": {
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "abc@sample.com"
                 },
                 "hire_date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-08-17 09:00:00"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "simson"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "홍길동"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234"
                 },
                 "phone_number": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "010-1234-1234"
                 },
                 "work_code": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 }
             }
         }

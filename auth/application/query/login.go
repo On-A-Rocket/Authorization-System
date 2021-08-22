@@ -1,6 +1,10 @@
 package query
 
-import "github.com/dgrijalva/jwt-go/v4"
+import (
+	"time"
+
+	"github.com/dgrijalva/jwt-go/v4"
+)
 
 type LoginQuery struct {
 	Id       string
@@ -10,6 +14,14 @@ type LoginQuery struct {
 type AuthTokenCliams struct {
 	TokenUUID string `json:"tid"`
 	UserID    string `json:"id"`
-	// Role      []string `json:"role"`
 	jwt.StandardClaims
+}
+
+type TokenDetails struct {
+	AccessToken            string
+	RefreshToken           string
+	AccessUUID             string
+	RefreshUUID            string
+	AccessTokenExpiration  time.Time
+	RefreshTokenExpiration time.Time
 }

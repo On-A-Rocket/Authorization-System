@@ -9,6 +9,7 @@ import (
 
 type Controller struct {
 	Account *AccountController
+	Login   *LoginController
 }
 
 func NewController(
@@ -17,9 +18,11 @@ func NewController(
 	config config.Interface) *Controller {
 	return &Controller{
 		Account: newAccountController(*command.Account),
+		Login:   newLoginController(*query.Login),
 	}
 }
 
 func (ctl *Controller) Routing(router *gin.Engine) {
 	ctl.Account.accountRouting(router)
+	ctl.Login.loginRouting(router)
 }

@@ -20,7 +20,7 @@ type Redis struct {
 func newRedisConfig() *Redis {
 	redis := &Redis{
 		address:  "localhost:6379",
-		password: "1234",
+		password: "",
 	}
 
 	if address := os.Getenv("REDIS_ADDRESS"); address != "" {
@@ -39,6 +39,7 @@ func (r *Redis) Client() *redis.Client {
 		Password: r.password,
 		DB:       0,
 	})
+
 	return client
 }
 

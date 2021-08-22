@@ -2,18 +2,25 @@ definitions:
   dto.CreateAccount:
     properties:
       email:
+        example: abc@sample.com
         type: string
       hire_date:
+        example: "2021-08-17 09:00:00"
         type: string
       id:
+        example: simson
         type: string
       name:
+        example: 홍길동
         type: string
       password:
+        example: "1234"
         type: string
       phone_number:
+        example: 010-1234-1234
         type: string
       work_code:
+        example: 1
         type: integer
     type: object
 info:
@@ -41,4 +48,26 @@ paths:
       summary: Create Account
       tags:
       - Account
+  /login:
+    get:
+      description: Login
+      parameters:
+      - description: Id
+        in: query
+        name: id
+        type: string
+      - description: Password
+        in: query
+        name: password
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Login
+      tags:
+      - Login
 swagger: "2.0"
