@@ -4,39 +4,15 @@ import (
 	"log"
 
 	"github.com/On-A-Rocket/Authorization-System/auth/application/command"
+	"github.com/On-A-Rocket/Authorization-System/auth/application/query"
 	"github.com/On-A-Rocket/Authorization-System/auth/config"
 	"github.com/On-A-Rocket/Authorization-System/auth/controller"
 	"github.com/On-A-Rocket/Authorization-System/auth/docs"
-	"github.com/On-A-Rocket/Authorization-System/auth/domain/entity"
 	"github.com/On-A-Rocket/Authorization-System/auth/repository"
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
-
-func getDatabaseConnection(config config.Interface) *gorm.DB {
-	user := config.Database().User()
-	password := config.Database().Password()
-	host := config.Database().Host()
-	port := config.Database().Port()
-	name := config.Database().Name()
-	dsn := user + ":" + password + "@tcp(" + host + ":" + port + ")/" + name + "?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	db.AutoMigrate(
-		&entity.Account{},
-	)
-
-	return db
-}
 
 func setSwaggerInfo() {
 	docs.SwaggerInfo.Title = "Authorization System REST API"
@@ -44,18 +20,37 @@ func setSwaggerInfo() {
 	docs.SwaggerInfo.Version = "1.0"
 }
 
+func corsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, PATCH, DELETE")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	}
+}
+
 func main() {
+	router := gin.Default()
+	router.Use(corsMiddleware())
+
 	setSwaggerInfo()
 	config := config.Initialize()
 
-	router := gin.Default()
+	dbConnection := config.Database().Connection()
+	_ = config.Redis().Client()
 
-	dbConnection := getDatabaseConnection(config)
+	query := query.NewQuery(dbConnection, config)
 
 	repository := repository.NewRepository(dbConnection)
-	command := command.NewCommand(repository)
+	command := command.NewCommand(repository, config)
 
-	ctl := controller.NewController(*command)
+	ctl := controller.NewController(*query, *command, config)
 	ctl.Routing(router)
 
 	router.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

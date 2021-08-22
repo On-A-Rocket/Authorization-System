@@ -1,18 +1,24 @@
 package config
 
 import (
+	"log"
 	"os"
+
+	"github.com/On-A-Rocket/Authorization-System/auth/domain/entity"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-type DatabaseConfigInterface interface {
+type DatabaseInterface interface {
 	Port() string
 	Host() string
 	Name() string
 	User() string
 	Password() string
+	Connection() *gorm.DB
 }
 
-// Database database config struct
 type Database struct {
 	port     string
 	host     string
@@ -47,6 +53,27 @@ func newDatabaseConfig() *Database {
 	}
 
 	return db
+}
+
+func (db *Database) Connection() *gorm.DB {
+	user := db.User()
+	password := db.Password()
+	host := db.Host()
+	port := db.Port()
+	name := db.Name()
+	dsn := user + ":" + password + "@tcp(" + host + ":" + port + ")/" + name + "?charset=utf8mb4&parseTime=True&loc=Local"
+	dbConnection, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dbConnection.AutoMigrate(
+		&entity.Account{},
+	)
+
+	return dbConnection
 }
 
 func (db *Database) Port() string {
