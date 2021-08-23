@@ -17,7 +17,7 @@ type Account struct {
 	TotalAnnual     float32    `gorm:"default: null"`
 	UseAnnual       float32    `gorm:"default: null"`
 	RemainAnnual    float32    `gorm:"default: null"`
-	HireDate        time.Time  `gorm:"not null"`
+	HireDate        string     `gorm:"not null"`
 	UpdateDate      time.Time  `gorm:"default:current_timestamp; not null"`
 	ResignationDate *time.Time `gorm:"default: null"`
 }

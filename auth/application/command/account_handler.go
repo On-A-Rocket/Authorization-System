@@ -1,8 +1,6 @@
 package command
 
 import (
-	"time"
-
 	"github.com/On-A-Rocket/Authorization-System/auth/domain/entity"
 	iRepository "github.com/On-A-Rocket/Authorization-System/auth/domain/iReporitory"
 	"golang.org/x/crypto/bcrypt"
@@ -24,11 +22,6 @@ func (handler *AccountCommandHandler) CreateAccountHandler(
 		return err
 	}
 
-	hireDate, err := time.Parse("2006-01-02 15:04:05", command.HireDate)
-	if err != nil {
-		return err
-	}
-
 	requestEntity := entity.Account{
 		Id:          command.Id,
 		Password:    hashedPassword,
@@ -36,7 +29,7 @@ func (handler *AccountCommandHandler) CreateAccountHandler(
 		Email:       command.Email,
 		PhoneNumber: command.PhoneNumber,
 		WorkCode:    command.WorkCode,
-		HireDate:    hireDate,
+		HireDate:    command.HireDate,
 	}
 
 	transaction := handler.repository.StartTransaction()

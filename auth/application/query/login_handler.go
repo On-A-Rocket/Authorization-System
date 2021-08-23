@@ -1,12 +1,10 @@
 package query
 
 import (
-	"time"
-
 	"github.com/On-A-Rocket/Authorization-System/auth/config"
-	"github.com/dgrijalva/jwt-go/v4"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	"github.com/On-A-Rocket/Authorization-System/auth/domain/dto"
+	"github.com/On-A-Rocket/Authorization-System/auth/domain/entity"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -19,66 +17,37 @@ func newLoginQueryHandler(db *gorm.DB, config config.Interface) *LoginQueryHandl
 	return &LoginQueryHandler{db, config}
 }
 
-func (handler *LoginQueryHandler) LoginHandler(
-	context *gin.Context,
-	query LoginQuery) error {
-	if err := handler.createToken(context, query.Id); err != nil {
-		return err
+func (handler *LoginQueryHandler) LoginHandler(query LoginQuery) (dto.Account, error) {
+	account := entity.Account{}
+	dto := dto.Account{}
+	condition := entity.Account{Id: query.Id}
+	if err := handler.db.Where(condition).Find(&account).Error; err != nil {
+		return dto, err
 	}
 
-	return nil
+	if err := bcrypt.CompareHashAndPassword(
+		[]byte(account.Password),
+		[]byte(query.Password)); err != nil {
+		return dto, err
+	}
+
+	return handler.entityToDTO(account), nil
 }
 
-func (handler *LoginQueryHandler) createToken(context *gin.Context, userID string) error {
-	jwtKey := handler.config.Auth().AccessSecret()
-
-	token := &TokenDetails{}
-	token.AccessUUID = uuid.NewString()
-	token.AccessTokenExpiration = time.Now().Add(time.Minute * 15)
-	token.RefreshUUID = uuid.NewString()
-	token.RefreshTokenExpiration = time.Now().Add(time.Hour * 24 * 7)
-
-	accessTokenConfig := AuthTokenCliams{
-		TokenUUID: token.AccessUUID,
-		UserID:    userID,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: jwt.At(token.AccessTokenExpiration),
-		},
+func (handler *LoginQueryHandler) entityToDTO(entity entity.Account) dto.Account {
+	return dto.Account{
+		Name:           entity.Name,
+		Email:          entity.Email,
+		PhoneNumber:    entity.PhoneNumber,
+		DepartmentCode: entity.DepartmentCode,
+		PositionCode:   entity.PositionCode,
+		AuthorityCode:  entity.AuthorityCode,
+		FirstPaymentId: entity.FirstPaymentId,
+		FinalPaymentId: entity.FinalPaymentId,
+		WorkCode:       entity.WorkCode,
+		TotalAnnual:    entity.TotalAnnual,
+		UseAnnual:      entity.UseAnnual,
+		RemainAnnual:   entity.RemainAnnual,
+		HireDate:       entity.HireDate,
 	}
-	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &accessTokenConfig)
-
-	accessTokenValue, err := accessToken.SignedString([]byte(jwtKey))
-	if err != nil {
-		return err
-	}
-	token.AccessToken = accessTokenValue
-
-	refreshTokenConfig := AuthTokenCliams{
-		TokenUUID: token.RefreshUUID,
-		UserID:    userID,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: jwt.At(token.RefreshTokenExpiration),
-		},
-	}
-	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &refreshTokenConfig)
-
-	refreshTokenValue, err := refreshToken.SignedString([]byte(jwtKey))
-	if err != nil {
-		return err
-	}
-	token.RefreshToken = refreshTokenValue
-
-	accessTokenExpiration := time.Unix(token.AccessTokenExpiration.Unix(), 0)
-	refreshTokenExpiration := time.Unix(token.RefreshTokenExpiration.Unix(), 0)
-	now := time.Now()
-
-	redis := handler.config.Redis().Client()
-	if accessError := redis.Set(context, token.AccessUUID, token.AccessToken, accessTokenExpiration.Sub(now)).Err(); err != nil {
-		return accessError
-	}
-	if refreshError := redis.Set(context, token.RefreshUUID, token.RefreshToken, refreshTokenExpiration.Sub(now)).Err(); err != nil {
-		return refreshError
-	}
-
-	return nil
 }

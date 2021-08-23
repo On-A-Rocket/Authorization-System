@@ -18,7 +18,7 @@ func NewController(
 	config config.Interface) *Controller {
 	return &Controller{
 		Account: newAccountController(*command.Account),
-		Login:   newLoginController(*query.Login),
+		Login:   newLoginController(*query.Login, *command.Login),
 	}
 }
 

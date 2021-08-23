@@ -43,7 +43,6 @@ func main() {
 	config := config.Initialize()
 
 	dbConnection := config.Database().Connection()
-	_ = config.Redis().Client()
 
 	query := query.NewQuery(dbConnection, config)
 

@@ -7,6 +7,7 @@ import (
 
 type Command struct {
 	Account *AccountCommandHandler
+	Login   *LoginCommandHandler
 }
 
 func NewCommand(
@@ -14,5 +15,6 @@ func NewCommand(
 	config config.Interface) *Command {
 	return &Command{
 		Account: newAccountCommandHandler(repository.GetAccount()),
+		Login:   newLoginCommandHandler(config),
 	}
 }

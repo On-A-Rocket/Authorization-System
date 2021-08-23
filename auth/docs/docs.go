@@ -58,8 +58,11 @@ var doc = `{
             }
         },
         "/login": {
-            "get": {
+            "post": {
                 "description": "Login",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -69,23 +72,20 @@ var doc = `{
                 "summary": "Login",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Id",
-                        "name": "id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Password",
-                        "name": "password",
-                        "in": "query"
+                        "description": "login",
+                        "name": "login",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Login"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dto.Token"
                         }
                     }
                 }
@@ -123,6 +123,30 @@ var doc = `{
                 "work_code": {
                     "type": "integer",
                     "example": 1
+                }
+            }
+        },
+        "dto.Login": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "simson"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "1234"
+                }
+            }
+        },
+        "dto.Token": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
                 }
             }
         }

@@ -23,6 +23,22 @@ definitions:
         example: 1
         type: integer
     type: object
+  dto.Login:
+    properties:
+      id:
+        example: simson
+        type: string
+      password:
+        example: "1234"
+        type: string
+    type: object
+  dto.Token:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -49,24 +65,24 @@ paths:
       tags:
       - Account
   /login:
-    get:
+    post:
+      consumes:
+      - application/json
       description: Login
       parameters:
-      - description: Id
-        in: query
-        name: id
-        type: string
-      - description: Password
-        in: query
-        name: password
-        type: string
+      - description: login
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Login'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/dto.Token'
       summary: Login
       tags:
       - Login
