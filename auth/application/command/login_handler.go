@@ -18,7 +18,7 @@ func newLoginCommandHandler(config config.Interface) *LoginCommandHandler {
 	return &LoginCommandHandler{config}
 }
 
-func (handler *LoginCommandHandler) CreateToken(context *gin.Context, account AccountCommand) (dto.Token, error) {
+func (handler *LoginCommandHandler) CreateToken(context *gin.Context, id string) (dto.Token, error) {
 	result := dto.Token{}
 	jwtKey := handler.config.Auth().AccessSecret()
 
@@ -28,9 +28,8 @@ func (handler *LoginCommandHandler) CreateToken(context *gin.Context, account Ac
 	token.RefreshUUID = uuid.NewString()
 	token.RefreshTokenExpiration = time.Now().Add(time.Hour * 24 * 7)
 
-	// accessTokenClaim := handler.accountToTokenCliams(account, token.AccessUUID, token.AccessTokenExpiration)
 	accessTokenClaim := jwt.NewWithClaims(jwt.SigningMethodHS256,
-		handler.accountToTokenCliams(account, token.AccessUUID, token.AccessTokenExpiration))
+		handler.accountToTokenCliams(id, token.AccessUUID, token.AccessTokenExpiration))
 	accessToken, err := accessTokenClaim.SignedString([]byte(jwtKey))
 	if err != nil {
 		return result, err
@@ -38,9 +37,8 @@ func (handler *LoginCommandHandler) CreateToken(context *gin.Context, account Ac
 	token.AccessToken = accessToken
 	result.AccessToken = accessToken
 
-	// refreshTokenConfig := handler.accountToTokenCliams(account, token.RefreshUUID, token.RefreshTokenExpiration)
 	refreshTokenClaim := jwt.NewWithClaims(jwt.SigningMethodHS256,
-		handler.accountToTokenCliams(account, token.RefreshUUID, token.RefreshTokenExpiration))
+		handler.accountToTokenCliams(id, token.RefreshUUID, token.RefreshTokenExpiration))
 	refreshToken, err := refreshTokenClaim.SignedString([]byte(jwtKey))
 	if err != nil {
 		return result, err
@@ -64,22 +62,10 @@ func (handler *LoginCommandHandler) CreateToken(context *gin.Context, account Ac
 }
 
 func (handler *LoginCommandHandler) accountToTokenCliams(
-	command AccountCommand, token string, expiration time.Time) TokenCliams {
+	id string, token string, expiration time.Time) TokenCliams {
 	return TokenCliams{
 		TokenUUID:      token,
-		Name:           command.Name,
-		Email:          command.Email,
-		PhoneNumber:    command.PhoneNumber,
-		DepartmentCode: command.DepartmentCode,
-		PositionCode:   command.PositionCode,
-		AuthorityCode:  command.AuthorityCode,
-		FirstPaymentId: command.FirstPaymentId,
-		FinalPaymentId: command.FinalPaymentId,
-		WorkCode:       command.WorkCode,
-		TotalAnnual:    command.TotalAnnual,
-		UseAnnual:      command.UseAnnual,
-		RemainAnnual:   command.RemainAnnual,
-		HireDate:       command.HireDate,
+		UserID:         id,
 		StandardClaims: jwt.StandardClaims{ExpiresAt: jwt.At(expiration)},
 	}
 }

@@ -12,20 +12,8 @@ type LoginCommand struct {
 }
 
 type TokenCliams struct {
-	TokenUUID      string `json:"tid"`
-	Name           string
-	Email          string
-	PhoneNumber    string
-	DepartmentCode int
-	PositionCode   int
-	AuthorityCode  int
-	FirstPaymentId string
-	FinalPaymentId string
-	WorkCode       int
-	TotalAnnual    float32
-	UseAnnual      float32
-	RemainAnnual   float32
-	HireDate       string
+	TokenUUID string `json:"tid"`
+	UserID    string `json:"id"`
 	jwt.StandardClaims
 }
 
@@ -36,20 +24,4 @@ type TokenDetails struct {
 	RefreshUUID            string
 	AccessTokenExpiration  time.Time
 	RefreshTokenExpiration time.Time
-}
-
-type AccountCommand struct {
-	Name           string
-	Email          string
-	PhoneNumber    string
-	DepartmentCode int
-	PositionCode   int
-	AuthorityCode  int
-	FirstPaymentId string
-	FinalPaymentId string
-	WorkCode       int
-	TotalAnnual    float32
-	UseAnnual      float32
-	RemainAnnual   float32
-	HireDate       string
 }

@@ -48,28 +48,12 @@ func (ctl *LoginController) Login(context *gin.Context) {
 		Id:       dto.Id,
 		Password: dto.Password,
 	}
-	account, err := ctl.queryHandler.LoginHandler(query)
-	if err != nil {
+	if err := ctl.queryHandler.LoginHandler(query); err != nil {
 		context.JSON(http.StatusUnauthorized, err.Error())
 		return
 	}
 
-	command := command.AccountCommand{
-		Name:           account.Name,
-		Email:          account.Email,
-		PhoneNumber:    account.PhoneNumber,
-		DepartmentCode: account.DepartmentCode,
-		PositionCode:   account.PositionCode,
-		AuthorityCode:  account.AuthorityCode,
-		FirstPaymentId: account.FirstPaymentId,
-		FinalPaymentId: account.FinalPaymentId,
-		WorkCode:       account.WorkCode,
-		TotalAnnual:    account.TotalAnnual,
-		UseAnnual:      account.UseAnnual,
-		RemainAnnual:   account.RemainAnnual,
-		HireDate:       account.HireDate,
-	}
-	token, err := ctl.commandHandler.CreateToken(context, command)
+	token, err := ctl.commandHandler.CreateToken(context, dto.Id)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, err.Error())
 		return

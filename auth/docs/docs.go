@@ -102,7 +102,7 @@ var doc = `{
                 },
                 "hire_date": {
                     "type": "string",
-                    "example": "2021-08-17 09:00:00"
+                    "example": "2021-08-17"
                 },
                 "id": {
                     "type": "string",
