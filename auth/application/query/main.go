@@ -6,11 +6,17 @@ import (
 )
 
 type Query struct {
-	Login *LoginQueryHandler
+	db     *gorm.DB
+	config config.Interface
+	// Login *LoginQueryHandler
+	// Auth  *AuthQueryHandler
 }
 
 func NewQuery(db *gorm.DB, config config.Interface) *Query {
 	return &Query{
-		Login: newLoginQueryHandler(db, config),
+		db:     db,
+		config: config,
+		// Login: newLoginQueryHandler(db, config),
+		// Auth:  newAuthQueryHandler(config),
 	}
 }

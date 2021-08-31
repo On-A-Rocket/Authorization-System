@@ -6,15 +6,15 @@ import (
 )
 
 type Command struct {
-	Account *AccountCommandHandler
-	Login   *LoginCommandHandler
+	repository iRepository.Interface
+	config     config.Interface
 }
 
 func NewCommand(
-	repository iRepository.RepositoryInterface,
+	repository iRepository.Interface,
 	config config.Interface) *Command {
 	return &Command{
-		Account: newAccountCommandHandler(repository.GetAccount()),
-		Login:   newLoginCommandHandler(config),
+		repository: repository,
+		config:     config,
 	}
 }

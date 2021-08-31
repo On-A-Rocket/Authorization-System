@@ -6,11 +6,13 @@ import (
 )
 
 type Repository struct {
-	Account AccountRepository
+	db *gorm.DB
 }
 
-func NewRepository(db *gorm.DB) *iRepository.Repository {
-	return &iRepository.Repository{
-		Account: newAccountRepository(db),
-	}
+func NewRepository(db *gorm.DB) iRepository.Interface {
+	return &Repository{db}
+}
+
+func (repo *Repository) StartTransaction() *gorm.DB {
+	return repo.db.Begin()
 }

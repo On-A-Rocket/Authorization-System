@@ -1,13 +1,11 @@
 package iRepository
 
-type Repository struct {
-	Account AccountInterface
-}
+import (
+	"github.com/On-A-Rocket/Authorization-System/auth/domain/entity"
+	"gorm.io/gorm"
+)
 
-type RepositoryInterface interface {
-	GetAccount() AccountInterface
-}
-
-func (repo *Repository) GetAccount() AccountInterface {
-	return repo.Account
+type Interface interface {
+	StartTransaction() *gorm.DB
+	CreateAccount(*entity.Account) error
 }

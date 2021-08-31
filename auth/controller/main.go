@@ -8,8 +8,9 @@ import (
 )
 
 type Controller struct {
-	Account *AccountController
-	Login   *LoginController
+	query   query.Query
+	command command.Command
+	config  config.Interface
 }
 
 func NewController(
@@ -17,12 +18,13 @@ func NewController(
 	command command.Command,
 	config config.Interface) *Controller {
 	return &Controller{
-		Account: newAccountController(*command.Account),
-		Login:   newLoginController(*query.Login, *command.Login),
+		query:   query,
+		command: command,
+		config:  config,
 	}
 }
 
 func (ctl *Controller) Routing(router *gin.Engine) {
-	ctl.Account.accountRouting(router)
-	ctl.Login.loginRouting(router)
+	ctl.accountRouting(router)
+	ctl.loginRouting(router)
 }

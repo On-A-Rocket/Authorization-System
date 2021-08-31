@@ -3,22 +3,13 @@ package command
 import (
 	"time"
 
-	"github.com/On-A-Rocket/Authorization-System/auth/config"
 	"github.com/On-A-Rocket/Authorization-System/auth/domain/dto"
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
-type LoginCommandHandler struct {
-	config config.Interface
-}
-
-func newLoginCommandHandler(config config.Interface) *LoginCommandHandler {
-	return &LoginCommandHandler{config}
-}
-
-func (handler *LoginCommandHandler) CreateToken(context *gin.Context, id string) (dto.Token, error) {
+func (handler *Command) CreateToken(context *gin.Context, id string) (dto.Token, error) {
 	result := dto.Token{}
 	jwtKey := handler.config.Auth().AccessSecret()
 
@@ -34,7 +25,6 @@ func (handler *LoginCommandHandler) CreateToken(context *gin.Context, id string)
 	if err != nil {
 		return result, err
 	}
-	token.AccessToken = accessToken
 	result.AccessToken = accessToken
 
 	refreshTokenClaim := jwt.NewWithClaims(jwt.SigningMethodHS256,
@@ -43,7 +33,6 @@ func (handler *LoginCommandHandler) CreateToken(context *gin.Context, id string)
 	if err != nil {
 		return result, err
 	}
-	token.RefreshToken = refreshToken
 	result.RefreshToken = refreshToken
 
 	accessTokenExpiration := time.Unix(token.AccessTokenExpiration.Unix(), 0)
@@ -51,17 +40,17 @@ func (handler *LoginCommandHandler) CreateToken(context *gin.Context, id string)
 	now := time.Now()
 
 	redis := handler.config.Redis().Client()
-	if accessError := redis.Set(context, token.AccessUUID, token.AccessToken, accessTokenExpiration.Sub(now)).Err(); err != nil {
+	if accessError := redis.Set(context, token.AccessUUID, id, accessTokenExpiration.Sub(now)).Err(); err != nil {
 		return result, accessError
 	}
-	if refreshError := redis.Set(context, token.RefreshUUID, token.RefreshToken, refreshTokenExpiration.Sub(now)).Err(); err != nil {
+	if refreshError := redis.Set(context, token.RefreshUUID, id, refreshTokenExpiration.Sub(now)).Err(); err != nil {
 		return result, refreshError
 	}
 
 	return result, nil
 }
 
-func (handler *LoginCommandHandler) accountToTokenCliams(
+func (handler *Command) accountToTokenCliams(
 	id string, token string, expiration time.Time) TokenCliams {
 	return TokenCliams{
 		TokenUUID:      token,
