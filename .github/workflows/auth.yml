@@ -14,8 +14,8 @@ jobs:
         working-directory: ./auth
     strategy:
       matrix:
-        go-version: [1.17]
-        platform: [ubuntu-latest, macos-latest, windows-latest]
+        go-version: [1.17.*]
+        platform: [ubuntu-latest]
     runs-on: ${{ matrix.platform }}
         
     steps:
@@ -37,7 +37,7 @@ jobs:
 
     - name: build and release to DockerHub
       env:
-        REPO: goflexsys
+        REPO: simson613
         LAYER_NAME: erp-auth
       run: |
         docker build -t $LAYER_NAME  .
